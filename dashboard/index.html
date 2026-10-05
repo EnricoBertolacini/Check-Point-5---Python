@@ -5,135 +5,296 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>GameScore Dashboard</title>
+    <title>GameScope | Metacritic Dashboard</title>
 
     <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-<header>
-    <div>
-        <h1> GameScore</h1>
-        <p>Dashboard de jogos coletados do Metacritic</p>
-    </div>
-</header>
+    <header class="topo">
+        <div class="container topo-conteudo">
 
-<main>
+            <div class="logo">
+                <div class="logo-icone">G</div>
 
-    <!-- ESTATÍSTICAS -->
+                <div>
+                    <h2>GameScope</h2>
+                    <span>Metacritic Analytics</span>
+                </div>
+            </div>
 
-    <section class="estatisticas">
-
-        <div class="card">
-            <span>Total de Jogos</span>
-            <h2 id="totalJogos">-</h2>
-        </div>
-
-        <div class="card">
-            <span>Nota Média</span>
-            <h2 id="notaMedia">-</h2>
-        </div>
-
-        <div class="card">
-            <span>Maior Nota</span>
-            <h2 id="notaMaxima">-</h2>
-        </div>
-
-        <div class="card">
-            <span>Menor Nota</span>
-            <h2 id="notaMinima">-</h2>
-        </div>
-
-    </section>
-
-
-    <!-- BUSCA -->
-
-    <section class="painel">
-
-        <h2>Buscar Jogos</h2>
-
-        <div class="busca">
-
-            <input
-                type="text"
-                id="campoBusca"
-                placeholder="Digite o nome de um jogo..."
-            >
-
-            <button id="botaoBuscar">
-                Buscar
-            </button>
+            <div class="api-status" id="apiStatus">
+                <span class="status-bolinha"></span>
+                Conectando...
+            </div>
 
         </div>
-
-        <div id="resultadoBusca"></div>
-
-    </section>
+    </header>
 
 
-    <!-- TOP 10 -->
+    <main class="container">
 
-    <section class="painel">
+        <!-- APRESENTAÇÃO -->
 
-        <h2>🏆 Top 10 Jogos</h2>
+        <section class="hero">
 
-        <table>
+            <div>
+                <span class="tag">DASHBOARD DE DADOS</span>
 
-            <thead>
+                <h1>
+                    Explore os melhores
+                    <span>jogos do Metacritic</span>
+                </h1>
 
-            <tr>
-                <th>#</th>
-                <th>Jogo</th>
-                <th>Metascore</th>
-            </tr>
+                <p>
+                    Dados coletados automaticamente com Python,
+                    armazenados no MongoDB e disponibilizados através
+                    de uma API FastAPI.
+                </p>
+            </div>
 
-            </thead>
+            <div class="hero-icon">
+                🎮
+            </div>
 
-            <tbody id="tabelaJogos">
-
-            </tbody>
-
-        </table>
-
-    </section>
-
-
-    <!-- FAIXA DE NOTAS -->
-
-    <section class="painel">
-
-        <h2>Jogos por Faixa de Nota</h2>
-
-        <div id="faixasNotas"></div>
-
-    </section>
+        </section>
 
 
-    <!-- VEREDITOS -->
+        <!-- ESTATÍSTICAS -->
 
-    <section class="painel">
+        <section class="metricas">
 
-        <h2>Classificação dos Jogos</h2>
+            <div class="card-metrica">
+                <div class="icone-metrica">🎮</div>
 
-        <div id="vereditos"></div>
-
-    </section>
-
-</main>
-
-
-<footer>
-
-    <p>
-        Projeto acadêmico • Python • MongoDB • FastAPI
-    </p>
-
-</footer>
+                <div>
+                    <span>Total de jogos</span>
+                    <h2 id="totalJogos">--</h2>
+                </div>
+            </div>
 
 
-<script src="script.js"></script>
+            <div class="card-metrica">
+                <div class="icone-metrica">⭐</div>
+
+                <div>
+                    <span>Nota média</span>
+                    <h2 id="notaMedia">--</h2>
+                </div>
+            </div>
+
+
+            <div class="card-metrica">
+                <div class="icone-metrica">🏆</div>
+
+                <div>
+                    <span>Maior nota</span>
+                    <h2 id="notaMaxima">--</h2>
+                </div>
+            </div>
+
+
+            <div class="card-metrica">
+                <div class="icone-metrica">📉</div>
+
+                <div>
+                    <span>Menor nota</span>
+                    <h2 id="notaMinima">--</h2>
+                </div>
+            </div>
+
+        </section>
+
+
+        <div class="ultima-atualizacao">
+            Última coleta:
+            <strong id="ultimaColeta">--</strong>
+        </div>
+
+
+        <!-- BUSCA -->
+
+        <section class="painel busca-painel">
+
+            <div class="titulo-painel">
+                <div>
+                    <span class="mini-titulo">CATÁLOGO</span>
+                    <h2>Buscar jogos</h2>
+                </div>
+            </div>
+
+
+            <div class="filtros">
+
+                <div class="campo busca-campo">
+                    <label>Nome do jogo</label>
+
+                    <input
+                        type="text"
+                        id="campoBusca"
+                        placeholder="Ex: Elden Ring..."
+                    >
+                </div>
+
+
+                <div class="campo">
+                    <label>Nota mínima</label>
+
+                    <select id="notaFiltro">
+                        <option value="">Todas</option>
+                        <option value="90">90+</option>
+                        <option value="80">80+</option>
+                        <option value="70">70+</option>
+                        <option value="50">50+</option>
+                    </select>
+                </div>
+
+
+                <div class="campo">
+                    <label>Veredito</label>
+
+                    <select id="vereditoFiltro">
+                        <option value="">Todos</option>
+                    </select>
+                </div>
+
+
+                <button id="botaoBuscar" class="botao-principal">
+                    Buscar
+                </button>
+
+                <button id="botaoLimpar" class="botao-secundario">
+                    Limpar
+                </button>
+
+            </div>
+
+
+            <div id="areaResultados" class="area-resultados">
+
+                <div class="resultado-cabecalho">
+                    <h3>Resultados</h3>
+
+                    <span id="quantidadeResultados"></span>
+                </div>
+
+                <div id="resultadoBusca"></div>
+
+            </div>
+
+        </section>
+
+
+        <!-- DASHBOARD PRINCIPAL -->
+
+        <section class="grid-dashboard">
+
+            <!-- TOP 10 -->
+
+            <div class="painel">
+
+                <div class="titulo-painel">
+
+                    <div>
+                        <span class="mini-titulo">RANKING</span>
+                        <h2>🏆 Top 10 jogos</h2>
+                    </div>
+
+                </div>
+
+
+                <div class="tabela-container">
+
+                    <table>
+
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Jogo</th>
+                                <th>Nota</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="tabelaJogos">
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </div>
+
+
+            <!-- DISTRIBUIÇÃO -->
+
+            <div class="painel">
+
+                <div class="titulo-painel">
+
+                    <div>
+                        <span class="mini-titulo">ANÁLISE</span>
+                        <h2>Distribuição de notas</h2>
+                    </div>
+
+                </div>
+
+
+                <div id="faixasNotas">
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+        <!-- VEREDITOS -->
+
+        <section class="painel">
+
+            <div class="titulo-painel">
+
+                <div>
+                    <span class="mini-titulo">CLASSIFICAÇÃO</span>
+                    <h2>Vereditos</h2>
+                </div>
+
+            </div>
+
+
+            <div id="vereditos" class="vereditos-grid">
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <footer>
+
+        <div class="container footer-conteudo">
+
+            <div>
+                <strong>GameScope</strong>
+                <p>Projeto acadêmico de coleta e análise de dados.</p>
+            </div>
+
+            <div class="tecnologias">
+                <span>Python</span>
+                <span>MongoDB</span>
+                <span>FastAPI</span>
+                <span>JavaScript</span>
+            </div>
+
+        </div>
+
+    </footer>
+
+
+    <script src="script.js"></script>
 
 </body>
 

@@ -1,308 +1,789 @@
-const API = "http://localhost:8000";
+const API = "http://127.0.0.1:8000";
 
 
-/* =========================
-   CARREGAR DASHBOARD
-========================= */
+/* ===================================
+   SEGURANÇA PARA TEXTO DO HTML
+=================================== */
+
+function escaparHTML(texto) {
+
+    if (texto === null || texto === undefined) {
+        return "";
+    }
+
+    return String(texto)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+}
+
+
+/* ===================================
+   CLASSIFICAÇÃO DA NOTA
+=================================== */
+
+function classeNota(nota) {
+
+    if (nota === null || nota === undefined) {
+        return "";
+    }
+
+    if (nota >= 90) {
+        return "nota-alta";
+    }
+
+    if (nota >= 70) {
+        return "nota-media";
+    }
+
+    return "nota-baixa";
+}
+
+
+/* ===================================
+   STATUS DA API
+=================================== */
+
+function atualizarStatus(status) {
+
+    const elemento =
+        document.getElementById("apiStatus");
+
+    if (status === "online") {
+
+        elemento.className =
+            "api-status online";
+
+        elemento.innerHTML = `
+            <span class="status-bolinha"></span>
+            API Online
+        `;
+
+    } else {
+
+        elemento.className =
+            "api-status offline";
+
+        elemento.innerHTML = `
+            <span class="status-bolinha"></span>
+            API Offline
+        `;
+    }
+}
+
+
+/* ===================================
+   DASHBOARD
+=================================== */
 
 async function carregarDashboard() {
 
     try {
 
-        const resposta = await fetch(`${API}/dashboard`);
+        const resposta =
+            await fetch(`${API}/dashboard`);
 
-        const dados = await resposta.json();
+        if (!resposta.ok) {
+            throw new Error(
+                "Erro ao acessar API"
+            );
+        }
 
-        mostrarEstatisticas(dados.resumo);
+        const dados =
+            await resposta.json();
 
-        mostrarTopJogos(dados.top_jogos);
+        atualizarStatus("online");
 
-        mostrarFaixas(dados.por_faixa);
+        mostrarEstatisticas(
+            dados.resumo
+        );
 
-        mostrarVereditos(dados.por_veredito);
+        mostrarTopJogos(
+            dados.top_jogos || []
+        );
+
+        mostrarFaixas(
+            dados.por_faixa || []
+        );
+
+        mostrarVereditos(
+            dados.por_veredito || []
+        );
+
+        preencherFiltroVereditos(
+            dados.por_veredito || []
+        );
 
     } catch (erro) {
 
-        console.error(
-            "Erro ao conectar com a API:",
-            erro
-        );
+        console.error(erro);
+
+        atualizarStatus("offline");
 
     }
 
 }
 
 
-/* =========================
-   ESTATÍSTICAS
-========================= */
+/* ===================================
+   CARDS
+=================================== */
 
 function mostrarEstatisticas(resumo) {
 
-    document.getElementById("totalJogos")
+    document
+        .getElementById("totalJogos")
         .textContent =
         resumo.total_jogos ?? 0;
 
-    document.getElementById("notaMedia")
+    document
+        .getElementById("notaMedia")
         .textContent =
-        resumo.nota_media ?? "-";
+        resumo.nota_media ?? "--";
 
-    document.getElementById("notaMaxima")
+    document
+        .getElementById("notaMaxima")
         .textContent =
-        resumo.nota_maxima ?? "-";
+        resumo.nota_maxima ?? "--";
 
-    document.getElementById("notaMinima")
+    document
+        .getElementById("notaMinima")
         .textContent =
-        resumo.nota_minima ?? "-";
+        resumo.nota_minima ?? "--";
+
+
+    const data =
+        resumo.ultima_coleta_em;
+
+    document
+        .getElementById("ultimaColeta")
+        .textContent =
+        formatarData(data);
 
 }
 
 
-/* =========================
+/* ===================================
+   DATA
+=================================== */
+
+function formatarData(data) {
+
+    if (!data) {
+        return "Não disponível";
+    }
+
+    const objetoData =
+        new Date(data);
+
+    if (
+        Number.isNaN(
+            objetoData.getTime()
+        )
+    ) {
+        return data;
+    }
+
+    return objetoData.toLocaleString(
+        "pt-BR"
+    );
+}
+
+
+/* ===================================
    TOP 10
-========================= */
+=================================== */
 
 function mostrarTopJogos(jogos) {
 
     const tabela =
-        document.getElementById("tabelaJogos");
+        document.getElementById(
+            "tabelaJogos"
+        );
 
     tabela.innerHTML = "";
 
-    jogos.forEach((jogo, index) => {
 
-        tabela.innerHTML += `
+    if (!jogos.length) {
 
+        tabela.innerHTML = `
             <tr>
-
-                <td>
-                    ${index + 1}
+                <td colspan="3">
+                    Nenhum jogo encontrado.
                 </td>
-
-                <td>
-                    ${jogo.titulo}
-                </td>
-
-                <td>
-                    <span class="nota">
-                        ${jogo.metascore}
-                    </span>
-                </td>
-
             </tr>
-
         `;
 
-    });
+        return;
+    }
+
+
+    jogos.forEach(
+        (jogo, index) => {
+
+            const posicao =
+                index + 1;
+
+            let medalha =
+                posicao;
+
+            if (posicao === 1) {
+                medalha = "🥇";
+            }
+
+            if (posicao === 2) {
+                medalha = "🥈";
+            }
+
+            if (posicao === 3) {
+                medalha = "🥉";
+            }
+
+
+            tabela.innerHTML += `
+
+                <tr>
+
+                    <td>
+                        <span
+                            class="
+                                posicao
+                                ${posicao === 1
+                                    ? "top1"
+                                    : ""}
+                            "
+                        >
+                            ${medalha}
+                        </span>
+                    </td>
+
+                    <td>
+                        ${escaparHTML(
+                            jogo.titulo
+                        )}
+                    </td>
+
+                    <td>
+
+                        <div
+                            class="
+                                nota
+                                ${classeNota(
+                                    jogo.metascore
+                                )}
+                            "
+                        >
+                            ${jogo.metascore ?? "--"}
+                        </div>
+
+                    </td>
+
+                </tr>
+            `;
+
+        }
+    );
 
 }
 
 
-/* =========================
-   FAIXA DE NOTAS
-========================= */
+/* ===================================
+   DISTRIBUIÇÃO DE NOTAS
+=================================== */
 
 function mostrarFaixas(faixas) {
 
     const container =
-        document.getElementById("faixasNotas");
+        document.getElementById(
+            "faixasNotas"
+        );
 
     container.innerHTML = "";
 
-    const maiorQuantidade =
+
+    if (!faixas.length) {
+
+        container.innerHTML = `
+            <p class="mensagem">
+                Nenhum dado disponível.
+            </p>
+        `;
+
+        return;
+    }
+
+
+    const maior =
         Math.max(
             ...faixas.map(
-                faixa => faixa.quantidade
+                item =>
+                    item.quantidade
             ),
             1
         );
 
-    faixas.forEach(faixa => {
 
-        const porcentagem =
-            (faixa.quantidade / maiorQuantidade)
-            * 100;
+    faixas.forEach(
+        faixa => {
 
-        container.innerHTML += `
+            const porcentagem =
+                (
+                    faixa.quantidade
+                    / maior
+                ) * 100;
 
-            <div class="faixa">
 
-                <div class="faixa-info">
+            container.innerHTML += `
 
-                    <span>
-                        ${faixa.faixa}
-                    </span>
+                <div class="faixa">
 
-                    <span>
-                        ${faixa.quantidade} jogos
-                    </span>
+                    <div class="faixa-info">
 
-                </div>
+                        <strong>
+                            ${escaparHTML(
+                                faixa.faixa
+                            )}
+                        </strong>
 
-                <div class="barra">
+                        <span>
+                            ${faixa.quantidade}
+                            jogos
+                        </span>
 
-                    <div
-                        class="barra-preenchida"
-                        style="width: ${porcentagem}%">
+                    </div>
+
+
+                    <div class="barra">
+
+                        <div
+                            class="
+                                barra-preenchida
+                            "
+                            style="
+                                width:
+                                ${porcentagem}%
+                            "
+                        >
+                        </div>
+
                     </div>
 
                 </div>
+            `;
 
-            </div>
-
-        `;
-
-    });
+        }
+    );
 
 }
 
 
-/* =========================
+/* ===================================
    VEREDITOS
-========================= */
+=================================== */
 
-function mostrarVereditos(vereditos) {
+function mostrarVereditos(
+    vereditos
+) {
 
     const container =
-        document.getElementById("vereditos");
+        document.getElementById(
+            "vereditos"
+        );
 
     container.innerHTML = "";
 
-    vereditos.forEach(item => {
 
-        container.innerHTML += `
+    vereditos.forEach(
+        item => {
 
-            <div class="veredito">
+            container.innerHTML += `
 
-                <span>
-                    ${item.veredito}
-                </span>
+                <div class="veredito">
 
-                <strong>
-                    ${item.quantidade}
-                </strong>
+                    <span>
+                        ${escaparHTML(
+                            item.veredito
+                        )}
+                    </span>
 
-            </div>
+                    <strong>
+                        ${item.quantidade}
+                    </strong>
 
-        `;
+                </div>
 
-    });
+            `;
+
+        }
+    );
 
 }
 
 
-/* =========================
-   BUSCAR JOGO
-========================= */
+/* ===================================
+   FILTRO DE VEREDITOS
+=================================== */
+
+function preencherFiltroVereditos(
+    vereditos
+) {
+
+    const select =
+        document.getElementById(
+            "vereditoFiltro"
+        );
+
+
+    vereditos.forEach(
+        item => {
+
+            const option =
+                document.createElement(
+                    "option"
+                );
+
+            option.value =
+                item.veredito;
+
+            option.textContent =
+                item.veredito;
+
+            select.appendChild(
+                option
+            );
+
+        }
+    );
+
+}
+
+
+/* ===================================
+   BUSCAR JOGOS
+=================================== */
 
 async function buscarJogos() {
 
     const busca =
         document
-            .getElementById("campoBusca")
+            .getElementById(
+                "campoBusca"
+            )
             .value
             .trim();
 
-    if (!busca) {
-        return;
+
+    const notaMin =
+        document
+            .getElementById(
+                "notaFiltro"
+            )
+            .value;
+
+
+    const veredito =
+        document
+            .getElementById(
+                "vereditoFiltro"
+            )
+            .value;
+
+
+    const parametros =
+        new URLSearchParams();
+
+
+    if (busca) {
+
+        parametros.append(
+            "busca",
+            busca
+        );
+
     }
+
+
+    if (notaMin) {
+
+        parametros.append(
+            "nota_min",
+            notaMin
+        );
+
+    }
+
+
+    if (veredito) {
+
+        parametros.append(
+            "veredito",
+            veredito
+        );
+
+    }
+
+
+    parametros.append(
+        "limite",
+        "20"
+    );
+
+
+    const area =
+        document.getElementById(
+            "areaResultados"
+        );
 
     const container =
         document.getElementById(
             "resultadoBusca"
         );
 
-    container.innerHTML =
-        "<p>Buscando...</p>";
+
+    area.classList.add(
+        "ativo"
+    );
+
+
+    container.innerHTML = `
+
+        <p class="mensagem">
+            Buscando jogos...
+        </p>
+
+    `;
+
 
     try {
 
         const resposta =
             await fetch(
-                `${API}/jogos?busca=${encodeURIComponent(busca)}&limite=10`
+                `${API}/jogos?${parametros}`
             );
+
+
+        if (!resposta.ok) {
+
+            throw new Error(
+                "Erro na busca"
+            );
+
+        }
+
 
         const dados =
             await resposta.json();
 
+
+        document
+            .getElementById(
+                "quantidadeResultados"
+            )
+            .textContent =
+            `${dados.total} encontrado(s)`;
+
+
         container.innerHTML = "";
 
-        if (dados.resultados.length === 0) {
 
-            container.innerHTML =
-                "<p>Nenhum jogo encontrado.</p>";
+        if (
+            !dados.resultados
+            ||
+            dados.resultados.length === 0
+        ) {
 
-            return;
-        }
+            container.innerHTML = `
 
-
-        dados.resultados.forEach(jogo => {
-
-            const nota =
-                jogo.metascore ?? "Sem nota";
-
-            container.innerHTML += `
-
-                <div class="jogo">
-
-                    <div>
-
-                        <strong>
-                            ${jogo.titulo}
-                        </strong>
-
-                        <p>
-                            ${jogo.veredito ?? ""}
-                        </p>
-
-                    </div>
-
-                    <span class="nota">
-                        ${nota}
-                    </span>
-
-                </div>
+                <p class="mensagem">
+                    Nenhum jogo encontrado.
+                </p>
 
             `;
 
-        });
+            return;
+
+        }
+
+
+        dados.resultados.forEach(
+            jogo => {
+
+                const titulo =
+                    escaparHTML(
+                        jogo.titulo
+                    );
+
+                const vereditoJogo =
+                    escaparHTML(
+                        jogo.veredito
+                        ?? "Sem classificação"
+                    );
+
+
+                const tituloHTML =
+                    jogo.url
+
+                    ? `
+                        <a
+                            href="${escaparHTML(
+                                jogo.url
+                            )}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            ${titulo}
+                        </a>
+                    `
+
+                    : titulo;
+
+
+                container.innerHTML += `
+
+                    <div class="jogo">
+
+                        <div>
+
+                            <h4>
+                                ${tituloHTML}
+                            </h4>
+
+                            <p>
+                                ${vereditoJogo}
+                            </p>
+
+                        </div>
+
+
+                        <div
+                            class="
+                                nota
+                                ${classeNota(
+                                    jogo.metascore
+                                )}
+                            "
+                        >
+
+                            ${jogo.metascore ?? "--"}
+
+                        </div>
+
+                    </div>
+
+                `;
+
+            }
+        );
+
 
     } catch (erro) {
 
-        container.innerHTML =
-            "<p>Erro ao buscar jogos.</p>";
+        console.error(erro);
+
+        container.innerHTML = `
+
+            <p class="
+                mensagem
+                erro
+            ">
+                Não foi possível
+                acessar a API.
+            </p>
+
+        `;
 
     }
 
 }
 
 
-/* BOTÃO */
+/* ===================================
+   LIMPAR
+=================================== */
+
+function limparFiltros() {
+
+    document
+        .getElementById(
+            "campoBusca"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "notaFiltro"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "vereditoFiltro"
+        )
+        .value = "";
+
+
+    document
+        .getElementById(
+            "areaResultados"
+        )
+        .classList.remove(
+            "ativo"
+        );
+
+}
+
+
+/* ===================================
+   EVENTOS
+=================================== */
 
 document
-    .getElementById("botaoBuscar")
+    .getElementById(
+        "botaoBuscar"
+    )
     .addEventListener(
         "click",
         buscarJogos
     );
 
 
-/* ENTER NA BUSCA */
+document
+    .getElementById(
+        "botaoLimpar"
+    )
+    .addEventListener(
+        "click",
+        limparFiltros
+    );
+
 
 document
-    .getElementById("campoBusca")
+    .getElementById(
+        "campoBusca"
+    )
     .addEventListener(
-        "keypress",
-        function (evento) {
+        "keydown",
+        evento => {
 
-            if (evento.key === "Enter") {
+            if (
+                evento.key
+                === "Enter"
+            ) {
+
                 buscarJogos();
+
             }
 
         }
     );
 
 
-/* INICIAR */
+/* ===================================
+   INICIAR
+=================================== */
 
 carregarDashboard();
