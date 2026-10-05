@@ -1,45 +1,90 @@
 const API = "http://127.0.0.1:8000";
 
 
+let graficoNotas = null;
+let graficoVereditos = null;
+
+
+
 /* ===================================
-   SEGURANÇA PARA TEXTO DO HTML
+   ESCAPAR HTML
 =================================== */
 
 function escaparHTML(texto) {
 
-    if (texto === null || texto === undefined) {
+    if (
+        texto === null ||
+        texto === undefined
+    ) {
         return "";
     }
 
+
     return String(texto)
-        .replaceAll("&", "&amp;")
-        .replaceAll("<", "&lt;")
-        .replaceAll(">", "&gt;")
-        .replaceAll('"', "&quot;")
-        .replaceAll("'", "&#039;");
+
+        .replaceAll(
+            "&",
+            "&amp;"
+        )
+
+        .replaceAll(
+            "<",
+            "&lt;"
+        )
+
+        .replaceAll(
+            ">",
+            "&gt;"
+        )
+
+        .replaceAll(
+            '"',
+            "&quot;"
+        )
+
+        .replaceAll(
+            "'",
+            "&#039;"
+        );
+
 }
 
 
+
 /* ===================================
-   CLASSIFICAÇÃO DA NOTA
+   COR DA NOTA
 =================================== */
 
 function classeNota(nota) {
 
-    if (nota === null || nota === undefined) {
+    if (
+        nota === null ||
+        nota === undefined
+    ) {
+
         return "";
+
     }
+
 
     if (nota >= 90) {
+
         return "nota-alta";
+
     }
+
 
     if (nota >= 70) {
+
         return "nota-media";
+
     }
 
+
     return "nota-baixa";
+
 }
+
 
 
 /* ===================================
@@ -49,16 +94,23 @@ function classeNota(nota) {
 function atualizarStatus(status) {
 
     const elemento =
-        document.getElementById("apiStatus");
+        document.getElementById(
+            "apiStatus"
+        );
+
 
     if (status === "online") {
 
         elemento.className =
             "api-status online";
 
+
         elemento.innerHTML = `
+
             <span class="status-bolinha"></span>
+
             API Online
+
         `;
 
     } else {
@@ -66,16 +118,23 @@ function atualizarStatus(status) {
         elemento.className =
             "api-status offline";
 
+
         elemento.innerHTML = `
+
             <span class="status-bolinha"></span>
+
             API Offline
+
         `;
+
     }
+
 }
 
 
+
 /* ===================================
-   DASHBOARD
+   CARREGAR DASHBOARD
 =================================== */
 
 async function carregarDashboard() {
@@ -83,86 +142,123 @@ async function carregarDashboard() {
     try {
 
         const resposta =
-            await fetch(`${API}/dashboard`);
+            await fetch(
+                `${API}/dashboard`
+            );
+
 
         if (!resposta.ok) {
+
             throw new Error(
-                "Erro ao acessar API"
+                "Erro ao acessar a API"
             );
+
         }
+
 
         const dados =
             await resposta.json();
 
-        atualizarStatus("online");
+
+        atualizarStatus(
+            "online"
+        );
+
 
         mostrarEstatisticas(
             dados.resumo
         );
 
+
         mostrarTopJogos(
             dados.top_jogos || []
         );
 
-        mostrarFaixas(
+
+        criarGraficoNotas(
             dados.por_faixa || []
         );
 
-        mostrarVereditos(
+
+        criarGraficoVereditos(
             dados.por_veredito || []
         );
+
 
         preencherFiltroVereditos(
             dados.por_veredito || []
         );
 
+
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            "Erro:",
+            erro
+        );
 
-        atualizarStatus("offline");
+
+        atualizarStatus(
+            "offline"
+        );
 
     }
 
 }
 
 
+
 /* ===================================
-   CARDS
+   INDICADORES
 =================================== */
 
-function mostrarEstatisticas(resumo) {
+function mostrarEstatisticas(
+    resumo
+) {
 
     document
-        .getElementById("totalJogos")
+        .getElementById(
+            "totalJogos"
+        )
         .textContent =
         resumo.total_jogos ?? 0;
 
+
     document
-        .getElementById("notaMedia")
+        .getElementById(
+            "notaMedia"
+        )
         .textContent =
         resumo.nota_media ?? "--";
 
+
     document
-        .getElementById("notaMaxima")
+        .getElementById(
+            "notaMaxima"
+        )
         .textContent =
         resumo.nota_maxima ?? "--";
 
+
     document
-        .getElementById("notaMinima")
+        .getElementById(
+            "notaMinima"
+        )
         .textContent =
         resumo.nota_minima ?? "--";
 
 
-    const data =
-        resumo.ultima_coleta_em;
-
     document
-        .getElementById("ultimaColeta")
+        .getElementById(
+            "ultimaColeta"
+        )
         .textContent =
-        formatarData(data);
+        formatarData(
+            resumo.ultima_coleta_em
+        );
 
 }
+
 
 
 /* ===================================
@@ -172,28 +268,38 @@ function mostrarEstatisticas(resumo) {
 function formatarData(data) {
 
     if (!data) {
+
         return "Não disponível";
+
     }
 
-    const objetoData =
+
+    const dataObjeto =
         new Date(data);
+
 
     if (
         Number.isNaN(
-            objetoData.getTime()
+            dataObjeto.getTime()
         )
     ) {
+
         return data;
+
     }
 
-    return objetoData.toLocaleString(
-        "pt-BR"
-    );
+
+    return dataObjeto
+        .toLocaleString(
+            "pt-BR"
+        );
+
 }
 
 
+
 /* ===================================
-   TOP 10
+   TOP 10 GERAL
 =================================== */
 
 function mostrarTopJogos(jogos) {
@@ -203,20 +309,31 @@ function mostrarTopJogos(jogos) {
             "tabelaJogos"
         );
 
+
     tabela.innerHTML = "";
 
 
     if (!jogos.length) {
 
         tabela.innerHTML = `
+
             <tr>
-                <td colspan="3">
+
+                <td
+                    colspan="3"
+                    class="mensagem-tabela"
+                >
+
                     Nenhum jogo encontrado.
+
                 </td>
+
             </tr>
+
         `;
 
         return;
+
     }
 
 
@@ -226,19 +343,32 @@ function mostrarTopJogos(jogos) {
             const posicao =
                 index + 1;
 
-            let medalha =
+
+            let exibicaoPosicao =
                 posicao;
 
+
             if (posicao === 1) {
-                medalha = "🥇";
+
+                exibicaoPosicao =
+                    "🥇";
+
             }
+
 
             if (posicao === 2) {
-                medalha = "🥈";
+
+                exibicaoPosicao =
+                    "🥈";
+
             }
 
+
             if (posicao === 3) {
-                medalha = "🥉";
+
+                exibicaoPosicao =
+                    "🥉";
+
             }
 
 
@@ -247,23 +377,28 @@ function mostrarTopJogos(jogos) {
                 <tr>
 
                     <td>
-                        <span
-                            class="
-                                posicao
-                                ${posicao === 1
-                                    ? "top1"
-                                    : ""}
-                            "
-                        >
-                            ${medalha}
+
+                        <span class="posicao">
+
+                            ${exibicaoPosicao}
+
                         </span>
+
                     </td>
 
+
                     <td>
-                        ${escaparHTML(
-                            jogo.titulo
-                        )}
+
+                        <span class="jogo-nome">
+
+                            ${escaparHTML(
+                                jogo.titulo
+                            )}
+
+                        </span>
+
                     </td>
+
 
                     <td>
 
@@ -275,12 +410,15 @@ function mostrarTopJogos(jogos) {
                                 )}
                             "
                         >
+
                             ${jogo.metascore ?? "--"}
+
                         </div>
 
                     </td>
 
                 </tr>
+
             `;
 
         }
@@ -289,141 +427,348 @@ function mostrarTopJogos(jogos) {
 }
 
 
+
 /* ===================================
-   DISTRIBUIÇÃO DE NOTAS
+   GRÁFICO DE NOTAS
 =================================== */
 
-function mostrarFaixas(faixas) {
+function criarGraficoNotas(
+    faixas
+) {
 
-    const container =
+    const canvas =
         document.getElementById(
-            "faixasNotas"
+            "graficoNotas"
         );
 
-    container.innerHTML = "";
+
+    const labels =
+        faixas.map(
+            item =>
+                item.faixa
+        );
 
 
-    if (!faixas.length) {
+    const valores =
+        faixas.map(
+            item =>
+                item.quantidade
+        );
 
-        container.innerHTML = `
-            <p class="mensagem">
-                Nenhum dado disponível.
-            </p>
-        `;
 
-        return;
+    if (graficoNotas) {
+
+        graficoNotas.destroy();
+
     }
 
 
-    const maior =
-        Math.max(
-            ...faixas.map(
-                item =>
-                    item.quantidade
-            ),
-            1
+    graficoNotas =
+        new Chart(
+            canvas,
+            {
+
+                type:
+                    "bar",
+
+
+                data: {
+
+                    labels:
+                        labels,
+
+
+                    datasets: [
+
+                        {
+
+                            label:
+                                "Quantidade de jogos",
+
+                            data:
+                                valores,
+
+                            backgroundColor:
+                                "rgba(121, 80, 242, 0.7)",
+
+                            borderColor:
+                                "rgba(151, 117, 250, 1)",
+
+                            borderWidth:
+                                1,
+
+                            borderRadius:
+                                7
+
+                        }
+
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    plugins: {
+
+                        legend: {
+
+                            display:
+                                false
+
+                        },
+
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(context) {
+
+                                        return (
+                                            context.raw +
+                                            " jogos"
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    },
+
+
+                    scales: {
+
+                        x: {
+
+                            ticks: {
+
+                                color:
+                                    "#8994a7"
+
+                            },
+
+
+                            grid: {
+
+                                display:
+                                    false
+
+                            }
+
+                        },
+
+
+                        y: {
+
+                            beginAtZero:
+                                true,
+
+
+                            ticks: {
+
+                                color:
+                                    "#8994a7",
+
+                                precision:
+                                    0
+
+                            },
+
+
+                            grid: {
+
+                                color:
+                                    "rgba(255,255,255,0.05)"
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
         );
-
-
-    faixas.forEach(
-        faixa => {
-
-            const porcentagem =
-                (
-                    faixa.quantidade
-                    / maior
-                ) * 100;
-
-
-            container.innerHTML += `
-
-                <div class="faixa">
-
-                    <div class="faixa-info">
-
-                        <strong>
-                            ${escaparHTML(
-                                faixa.faixa
-                            )}
-                        </strong>
-
-                        <span>
-                            ${faixa.quantidade}
-                            jogos
-                        </span>
-
-                    </div>
-
-
-                    <div class="barra">
-
-                        <div
-                            class="
-                                barra-preenchida
-                            "
-                            style="
-                                width:
-                                ${porcentagem}%
-                            "
-                        >
-                        </div>
-
-                    </div>
-
-                </div>
-            `;
-
-        }
-    );
 
 }
 
 
+
 /* ===================================
-   VEREDITOS
+   GRÁFICO DE VEREDITOS
 =================================== */
 
-function mostrarVereditos(
+function criarGraficoVereditos(
     vereditos
 ) {
 
-    const container =
+    const canvas =
         document.getElementById(
-            "vereditos"
+            "graficoVereditos"
         );
 
-    container.innerHTML = "";
+
+    const labels =
+        vereditos.map(
+            item =>
+                item.veredito
+        );
 
 
-    vereditos.forEach(
-        item => {
+    const valores =
+        vereditos.map(
+            item =>
+                item.quantidade
+        );
 
-            container.innerHTML += `
 
-                <div class="veredito">
+    if (graficoVereditos) {
 
-                    <span>
-                        ${escaparHTML(
-                            item.veredito
-                        )}
-                    </span>
+        graficoVereditos.destroy();
 
-                    <strong>
-                        ${item.quantidade}
-                    </strong>
+    }
 
-                </div>
 
-            `;
+    graficoVereditos =
+        new Chart(
+            canvas,
+            {
 
-        }
-    );
+                type:
+                    "doughnut",
+
+
+                data: {
+
+                    labels:
+                        labels,
+
+
+                    datasets: [
+
+                        {
+
+                            data:
+                                valores,
+
+
+                            backgroundColor: [
+
+                                "#7950f2",
+
+                                "#20c997",
+
+                                "#fcc419",
+
+                                "#ff6b6b",
+
+                                "#339af0",
+
+                                "#e64980",
+
+                                "#845ef7",
+
+                                "#51cf66"
+
+                            ],
+
+
+                            borderColor:
+                                "#121824",
+
+
+                            borderWidth:
+                                4
+
+                        }
+
+                    ]
+
+                },
+
+
+                options: {
+
+                    responsive:
+                        true,
+
+                    maintainAspectRatio:
+                        false,
+
+
+                    cutout:
+                        "62%",
+
+
+                    plugins: {
+
+                        legend: {
+
+                            position:
+                                "bottom",
+
+
+                            labels: {
+
+                                color:
+                                    "#8994a7",
+
+                                padding:
+                                    18,
+
+                                usePointStyle:
+                                    true
+
+                            }
+
+                        },
+
+
+                        tooltip: {
+
+                            callbacks: {
+
+                                label:
+                                    function(context) {
+
+                                        return (
+                                            context.label +
+                                            ": " +
+                                            context.raw +
+                                            " jogos"
+                                        );
+
+                                    }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+        );
 
 }
 
 
+
 /* ===================================
-   FILTRO DE VEREDITOS
+   PREENCHER FILTRO DE VEREDITOS
 =================================== */
 
 function preencherFiltroVereditos(
@@ -436,6 +781,15 @@ function preencherFiltroVereditos(
         );
 
 
+    select.innerHTML = `
+
+        <option value="">
+            Todos
+        </option>
+
+    `;
+
+
     vereditos.forEach(
         item => {
 
@@ -444,11 +798,14 @@ function preencherFiltroVereditos(
                     "option"
                 );
 
+
             option.value =
                 item.veredito;
 
+
             option.textContent =
                 item.veredito;
+
 
             select.appendChild(
                 option
@@ -460,8 +817,9 @@ function preencherFiltroVereditos(
 }
 
 
+
 /* ===================================
-   BUSCAR JOGOS
+   BUSCAR / FILTRAR JOGOS
 =================================== */
 
 async function buscarJogos() {
@@ -475,7 +833,7 @@ async function buscarJogos() {
             .trim();
 
 
-    const notaMin =
+    const faixaNota =
         document
             .getElementById(
                 "notaFiltro"
@@ -495,6 +853,9 @@ async function buscarJogos() {
         new URLSearchParams();
 
 
+
+    /* NOME */
+
     if (busca) {
 
         parametros.append(
@@ -505,15 +866,41 @@ async function buscarJogos() {
     }
 
 
-    if (notaMin) {
+
+    /* =================================
+       FAIXA DE NOTA
+
+       80-89 vira:
+
+       nota_min=80
+       nota_max=89
+    ================================= */
+
+    if (faixaNota) {
+
+        const [
+            notaMin,
+            notaMax
+        ] =
+            faixaNota.split("-");
+
 
         parametros.append(
             "nota_min",
             notaMin
         );
 
+
+        parametros.append(
+            "nota_max",
+            notaMax
+        );
+
     }
 
+
+
+    /* VEREDITO */
 
     if (veredito) {
 
@@ -525,10 +912,14 @@ async function buscarJogos() {
     }
 
 
+
+    /* QUANTIDADE DE REGISTROS */
+
     parametros.append(
         "limite",
-        "20"
+        "100"
     );
+
 
 
     const area =
@@ -536,10 +927,18 @@ async function buscarJogos() {
             "areaResultados"
         );
 
-    const container =
+
+    const tabela =
         document.getElementById(
             "resultadoBusca"
         );
+
+
+    const contador =
+        document.getElementById(
+            "quantidadeResultados"
+        );
+
 
 
     area.classList.add(
@@ -547,27 +946,39 @@ async function buscarJogos() {
     );
 
 
-    container.innerHTML = `
+    tabela.innerHTML = `
 
-        <p class="mensagem">
-            Buscando jogos...
-        </p>
+        <tr>
+
+            <td
+                colspan="3"
+                class="mensagem-tabela"
+            >
+
+                Buscando jogos...
+
+            </td>
+
+        </tr>
 
     `;
+
 
 
     try {
 
         const resposta =
             await fetch(
-                `${API}/jogos?${parametros}`
+
+                `${API}/jogos?${parametros.toString()}`
+
             );
 
 
         if (!resposta.ok) {
 
             throw new Error(
-                "Erro na busca"
+                "Erro ao buscar jogos"
             );
 
         }
@@ -577,100 +988,104 @@ async function buscarJogos() {
             await resposta.json();
 
 
-        document
-            .getElementById(
-                "quantidadeResultados"
-            )
-            .textContent =
-            `${dados.total} encontrado(s)`;
+
+        contador.textContent =
+
+            `${dados.total} registro(s) encontrado(s)`;
 
 
-        container.innerHTML = "";
+
+        tabela.innerHTML =
+            "";
+
 
 
         if (
-            !dados.resultados
-            ||
+            !dados.resultados ||
             dados.resultados.length === 0
         ) {
 
-            container.innerHTML = `
+            tabela.innerHTML = `
 
-                <p class="mensagem">
-                    Nenhum jogo encontrado.
-                </p>
+                <tr>
+
+                    <td
+                        colspan="3"
+                        class="mensagem-tabela"
+                    >
+
+                        Nenhum jogo encontrado
+                        com esses filtros.
+
+                    </td>
+
+                </tr>
 
             `;
+
 
             return;
 
         }
 
 
+
         dados.resultados.forEach(
             jogo => {
 
-                const titulo =
-                    escaparHTML(
-                        jogo.titulo
-                    );
+                tabela.innerHTML += `
 
-                const vereditoJogo =
-                    escaparHTML(
-                        jogo.veredito
-                        ?? "Sem classificação"
-                    );
+                    <tr>
 
 
-                const tituloHTML =
-                    jogo.url
+                        <td>
 
-                    ? `
-                        <a
-                            href="${escaparHTML(
-                                jogo.url
-                            )}"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            ${titulo}
-                        </a>
-                    `
+                            <span class="jogo-nome">
 
-                    : titulo;
-
-
-                container.innerHTML += `
-
-                    <div class="jogo">
-
-                        <div>
-
-                            <h4>
-                                ${tituloHTML}
-                            </h4>
-
-                            <p>
-                                ${vereditoJogo}
-                            </p>
-
-                        </div>
-
-
-                        <div
-                            class="
-                                nota
-                                ${classeNota(
-                                    jogo.metascore
+                                ${escaparHTML(
+                                    jogo.titulo
                                 )}
-                            "
-                        >
 
-                            ${jogo.metascore ?? "--"}
+                            </span>
 
-                        </div>
+                        </td>
 
-                    </div>
+
+                        <td>
+
+                            <span
+                                class="veredito-texto"
+                            >
+
+                                ${escaparHTML(
+                                    jogo.veredito ??
+                                    "Sem classificação"
+                                )}
+
+                            </span>
+
+                        </td>
+
+
+                        <td>
+
+                            <div
+                                class="
+                                    nota
+                                    ${classeNota(
+                                        jogo.metascore
+                                    )}
+                                "
+                            >
+
+                                ${jogo.metascore ?? "--"}
+
+                            </div>
+
+                        </td>
+
+
+                    </tr>
 
                 `;
 
@@ -680,17 +1095,29 @@ async function buscarJogos() {
 
     } catch (erro) {
 
-        console.error(erro);
+        console.error(
+            erro
+        );
 
-        container.innerHTML = `
 
-            <p class="
-                mensagem
-                erro
-            ">
-                Não foi possível
-                acessar a API.
-            </p>
+        tabela.innerHTML = `
+
+            <tr>
+
+                <td
+                    colspan="3"
+                    class="
+                        mensagem-tabela
+                        erro
+                    "
+                >
+
+                    Não foi possível consultar
+                    os dados da API.
+
+                </td>
+
+            </tr>
 
         `;
 
@@ -699,8 +1126,9 @@ async function buscarJogos() {
 }
 
 
+
 /* ===================================
-   LIMPAR
+   LIMPAR FILTROS
 =================================== */
 
 function limparFiltros() {
@@ -709,21 +1137,24 @@ function limparFiltros() {
         .getElementById(
             "campoBusca"
         )
-        .value = "";
+        .value =
+        "";
 
 
     document
         .getElementById(
             "notaFiltro"
         )
-        .value = "";
+        .value =
+        "";
 
 
     document
         .getElementById(
             "vereditoFiltro"
         )
-        .value = "";
+        .value =
+        "";
 
 
     document
@@ -735,6 +1166,7 @@ function limparFiltros() {
         );
 
 }
+
 
 
 /* ===================================
@@ -751,6 +1183,7 @@ document
     );
 
 
+
 document
     .getElementById(
         "botaoLimpar"
@@ -759,6 +1192,7 @@ document
         "click",
         limparFiltros
     );
+
 
 
 document
@@ -770,8 +1204,8 @@ document
         evento => {
 
             if (
-                evento.key
-                === "Enter"
+                evento.key ===
+                "Enter"
             ) {
 
                 buscarJogos();
@@ -782,8 +1216,9 @@ document
     );
 
 
+
 /* ===================================
-   INICIAR
+   INICIAR O DASHBOARD
 =================================== */
 
 carregarDashboard();

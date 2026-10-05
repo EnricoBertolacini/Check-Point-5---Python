@@ -681,15 +681,11 @@ Este projeto foi desenvolvido para fins educacionais, demonstrando conceitos de:
 Adicione aqui os nomes dos integrantes do grupo:
 
 ```text
-Nome do integrante 1
-Nome do integrante 2
-Nome do integrante 3
+Pedro Antônio Borges: RM 572549
+Enrico Bertolacini - rm570999
+Julia Lima da Silva - RM: 569203
+Guilherme Alvejan - RM: 570835
+Matheus Sá Teles - RM: 570835
 ```
 
 ---
-
-# 📄 Observação
-
-O projeto utiliza somente informações públicas relacionadas a jogos e foi desenvolvido exclusivamente para fins acadêmicos.
-
-A coleta deve ser realizada de forma responsável, evitando um número excessivo de requisições ao site de origem.
