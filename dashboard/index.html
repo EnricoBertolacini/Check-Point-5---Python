@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>GameScore Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<header>
+    <div>
+        <h1>🎮 GameScore</h1>
+        <p>Dashboard de jogos coletados do Metacritic</p>
+    </div>
+</header>
+
+<main>
+
+    <!-- ESTATÍSTICAS -->
+
+    <section class="estatisticas">
+
+        <div class="card">
+            <span>Total de Jogos</span>
+            <h2 id="totalJogos">-</h2>
+        </div>
+
+        <div class="card">
+            <span>Nota Média</span>
+            <h2 id="notaMedia">-</h2>
+        </div>
+
+        <div class="card">
+            <span>Maior Nota</span>
+            <h2 id="notaMaxima">-</h2>
+        </div>
+
+        <div class="card">
+            <span>Menor Nota</span>
+            <h2 id="notaMinima">-</h2>
+        </div>
+
+    </section>
+
+
+    <!-- BUSCA -->
+
+    <section class="painel">
+
+        <h2>Buscar Jogos</h2>
+
+        <div class="busca">
+
+            <input
+                type="text"
+                id="campoBusca"
+                placeholder="Digite o nome de um jogo..."
+            >
+
+            <button id="botaoBuscar">
+                Buscar
+            </button>
+
+        </div>
+
+        <div id="resultadoBusca"></div>
+
+    </section>
+
+
+    <!-- TOP 10 -->
+
+    <section class="painel">
+
+        <h2>🏆 Top 10 Jogos</h2>
+
+        <table>
+
+            <thead>
+
+            <tr>
+                <th>#</th>
+                <th>Jogo</th>
+                <th>Metascore</th>
+            </tr>
+
+            </thead>
+
+            <tbody id="tabelaJogos">
+
+            </tbody>
+
+        </table>
+
+    </section>
+
+
+    <!-- FAIXA DE NOTAS -->
+
+    <section class="painel">
+
+        <h2>Jogos por Faixa de Nota</h2>
+
+        <div id="faixasNotas"></div>
+
+    </section>
+
+
+    <!-- VEREDITOS -->
+
+    <section class="painel">
+
+        <h2>Classificação dos Jogos</h2>
+
+        <div id="vereditos"></div>
+
+    </section>
+
+</main>
+
+
+<footer>
+
+    <p>
+        Projeto acadêmico • Python • MongoDB • FastAPI
+    </p>
+
+</footer>
+
+
+<script src="script.js"></script>
+
+</body>
+
+</html>

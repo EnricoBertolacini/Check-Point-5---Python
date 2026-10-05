@@ -1,0 +1,262 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    color: #222;
+}
+
+
+/* HEADER */
+
+header {
+    background-color: #1c1c1c;
+    color: white;
+    padding: 30px 8%;
+}
+
+header h1 {
+    font-size: 32px;
+}
+
+header p {
+    margin-top: 5px;
+    color: #bbb;
+}
+
+
+/* CONTEÚDO */
+
+main {
+    width: 85%;
+    max-width: 1200px;
+    margin: 30px auto;
+}
+
+
+/* CARDS */
+
+.estatisticas {
+    display: grid;
+
+    grid-template-columns:
+        repeat(4, 1fr);
+
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.card {
+    background-color: white;
+
+    padding: 25px;
+
+    border-radius: 10px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.card span {
+    color: #777;
+    font-size: 14px;
+}
+
+.card h2 {
+    margin-top: 10px;
+    font-size: 30px;
+}
+
+
+/* PAINÉIS */
+
+.painel {
+    background-color: white;
+
+    padding: 25px;
+
+    border-radius: 10px;
+
+    margin-bottom: 25px;
+
+    box-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.painel h2 {
+    margin-bottom: 20px;
+}
+
+
+/* BUSCA */
+
+.busca {
+    display: flex;
+    gap: 10px;
+}
+
+.busca input {
+    flex: 1;
+
+    padding: 12px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 6px;
+
+    font-size: 16px;
+}
+
+.busca button {
+    padding: 12px 25px;
+
+    border: none;
+
+    background-color: #222;
+
+    color: white;
+
+    border-radius: 6px;
+
+    cursor: pointer;
+}
+
+.busca button:hover {
+    background-color: #444;
+}
+
+
+/* RESULTADOS DA BUSCA */
+
+.jogo {
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    padding: 15px 0;
+
+    border-bottom: 1px solid #eee;
+}
+
+.nota {
+    background-color: #2d9c5a;
+
+    color: white;
+
+    font-weight: bold;
+
+    padding: 8px 12px;
+
+    border-radius: 6px;
+}
+
+
+/* TABELA */
+
+table {
+    width: 100%;
+
+    border-collapse: collapse;
+}
+
+th,
+td {
+    text-align: left;
+
+    padding: 14px;
+
+    border-bottom: 1px solid #eee;
+}
+
+th {
+    color: #666;
+}
+
+
+/* BARRAS */
+
+.faixa {
+    margin-bottom: 15px;
+}
+
+.faixa-info {
+    display: flex;
+
+    justify-content: space-between;
+
+    margin-bottom: 5px;
+}
+
+.barra {
+    width: 100%;
+
+    background-color: #eee;
+
+    border-radius: 20px;
+
+    height: 12px;
+
+    overflow: hidden;
+}
+
+.barra-preenchida {
+    height: 100%;
+
+    background-color: #2d9c5a;
+
+    border-radius: 20px;
+}
+
+
+/* VEREDITOS */
+
+.veredito {
+    display: flex;
+
+    justify-content: space-between;
+
+    padding: 12px;
+
+    border-bottom: 1px solid #eee;
+}
+
+
+/* FOOTER */
+
+footer {
+    text-align: center;
+
+    padding: 30px;
+
+    color: #777;
+}
+
+
+/* RESPONSIVO */
+
+@media (max-width: 800px) {
+
+    .estatisticas {
+        grid-template-columns:
+            repeat(2, 1fr);
+    }
+
+}
+
+@media (max-width: 500px) {
+
+    main {
+        width: 95%;
+    }
+
+    .estatisticas {
+        grid-template-columns: 1fr;
+    }
+
+}
