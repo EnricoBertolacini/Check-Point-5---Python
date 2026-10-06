@@ -8,12 +8,11 @@ Metacritic  →  Web Crawler  →  MongoDB  →  FastAPI  →  Dashboard
 
 ## 👥 Integrantes
 
-Pedro Antônio Borges - RM: 572549
-Enrico Bertolacini - RM: 570999
-Julia Lima da Silva - RM: 569203
-Guilherme Alvejan - RM: 570835
-Matheus Sá Teles - RM: 570835
-
+- **Pedro Antônio Borges - RM: 572549**
+- **Enrico Bertolacini - RM: 570999**
+- **Julia Lima da Silva - RM: 569203**
+- **Guilherme Alvejan - RM: 570835**
+- **Matheus Sá Teles - RM: 570835**
 ---
 
 ## O que o projeto faz
