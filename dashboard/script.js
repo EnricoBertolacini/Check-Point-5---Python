@@ -6,9 +6,6 @@ let graficoVereditos = null;
 
 
 
-/* ===================================
-   ESCAPAR HTML
-=================================== */
 
 function escaparHTML(texto) {
 
@@ -51,9 +48,7 @@ function escaparHTML(texto) {
 
 
 
-/* ===================================
-   COR DA NOTA
-=================================== */
+
 
 function classeNota(nota) {
 
@@ -87,9 +82,6 @@ function classeNota(nota) {
 
 
 
-/* ===================================
-   STATUS DA API
-=================================== */
 
 function atualizarStatus(status) {
 
@@ -133,9 +125,8 @@ function atualizarStatus(status) {
 
 
 
-/* ===================================
-   CARREGAR DASHBOARD
-=================================== */
+
+
 
 async function carregarDashboard() {
 
@@ -208,9 +199,7 @@ async function carregarDashboard() {
 
 
 
-/* ===================================
-   INDICADORES
-=================================== */
+
 
 function mostrarEstatisticas(
     resumo
@@ -261,9 +250,7 @@ function mostrarEstatisticas(
 
 
 
-/* ===================================
-   DATA
-=================================== */
+
 
 function formatarData(data) {
 
@@ -298,9 +285,7 @@ function formatarData(data) {
 
 
 
-/* ===================================
-   TOP 10 GERAL
-=================================== */
+
 
 function mostrarTopJogos(jogos) {
 
@@ -428,9 +413,7 @@ function mostrarTopJogos(jogos) {
 
 
 
-/* ===================================
-   GRÁFICO DE NOTAS
-=================================== */
+
 
 function criarGraficoNotas(
     faixas
@@ -606,9 +589,7 @@ function criarGraficoNotas(
 
 
 
-/* ===================================
-   GRÁFICO DE VEREDITOS
-=================================== */
+
 
 function criarGraficoVereditos(
     vereditos
@@ -767,9 +748,7 @@ function criarGraficoVereditos(
 
 
 
-/* ===================================
-   PREENCHER FILTRO DE VEREDITOS
-=================================== */
+
 
 function preencherFiltroVereditos(
     vereditos
@@ -818,9 +797,8 @@ function preencherFiltroVereditos(
 
 
 
-/* ===================================
-   BUSCAR / FILTRAR JOGOS
-=================================== */
+
+
 
 async function buscarJogos() {
 
@@ -867,14 +845,7 @@ async function buscarJogos() {
 
 
 
-    /* =================================
-       FAIXA DE NOTA
 
-       80-89 vira:
-
-       nota_min=80
-       nota_max=89
-    ================================= */
 
     if (faixaNota) {
 
@@ -900,7 +871,7 @@ async function buscarJogos() {
 
 
 
-    /* VEREDITO */
+
 
     if (veredito) {
 
@@ -913,7 +884,6 @@ async function buscarJogos() {
 
 
 
-    /* QUANTIDADE DE REGISTROS */
 
     parametros.append(
         "limite",
@@ -1127,9 +1097,8 @@ async function buscarJogos() {
 
 
 
-/* ===================================
-   LIMPAR FILTROS
-=================================== */
+
+
 
 function limparFiltros() {
 
@@ -1169,9 +1138,7 @@ function limparFiltros() {
 
 
 
-/* ===================================
-   EVENTOS
-=================================== */
+
 
 document
     .getElementById(
@@ -1217,8 +1184,6 @@ document
 
 
 
-/* ===================================
-   INICIAR O DASHBOARD
-=================================== */
+
 
 carregarDashboard();
