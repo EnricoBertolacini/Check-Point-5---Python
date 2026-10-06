@@ -246,7 +246,7 @@ cd Check-Point-5---Python
 No Windows:
 
 ```powershell
-py -m venv venv
+python -m venv venv
 ```
 
 Ative:
@@ -271,7 +271,7 @@ O uso de ambiente virtual é recomendado para manter as dependências do projeto
 Com o ambiente virtual ativado:
 
 ```powershell
-py -m pip install -r requirements.txt
+python -m pip install -r requirements.txt
 ```
 
 As principais dependências utilizadas são:
@@ -337,13 +337,13 @@ Sempre execute os comandos a partir da pasta principal do projeto.
 Para coletar uma página:
 
 ```powershell
-py -m crawler.crawler 1
+python -m crawler.crawler 1
 ```
 
 Para coletar três páginas:
 
 ```powershell
-py -m crawler.crawler 3
+python -m crawler.crawler 3
 ```
 
 O número informado representa a quantidade de páginas que o crawler deverá processar.
@@ -369,7 +369,7 @@ Jogos que já existem no banco podem ser atualizados, enquanto novos jogos são 
 Execute:
 
 ```powershell
-py -m uvicorn api.main:app --reload
+python -m uvicorn api.main:app --reload
 ```
 
 Se tudo estiver funcionando corretamente, será exibida uma mensagem semelhante a:
