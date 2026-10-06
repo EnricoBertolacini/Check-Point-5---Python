@@ -1,125 +1,117 @@
-# 🎮 GameScope — Web Crawler, API e Dashboard de Jogos
+# 🎮 GameScope — Metacritic Analytics
 
-Projeto acadêmico desenvolvido com o objetivo de criar uma aplicação completa de **coleta, armazenamento, disponibilização e visualização de dados da Web**.
+Plataforma que coleta notas de jogos do [Metacritic](https://www.metacritic.com/game/), guarda tudo em um banco de dados e mostra os resultados em um dashboard.
 
-O sistema coleta informações públicas sobre jogos disponíveis no **Metacritic**, armazena os dados em um banco **MongoDB**, disponibiliza essas informações através de uma **API REST desenvolvida com FastAPI** e apresenta os resultados em um **dashboard web desenvolvido com HTML, CSS e JavaScript**.
-
----
-
-## 📌 Objetivo do projeto
-
-O projeto demonstra na prática a integração entre diferentes etapas de uma aplicação de dados:
-
-```text
-Metacritic
-    ↓
-Web Crawler em Python
-    ↓
-MongoDB
-    ↓
-FastAPI
-    ↓
-API REST
-    ↓
-JavaScript
-    ↓
-Dashboard Web
+```
+Metacritic  →  Web Crawler  →  MongoDB  →  FastAPI  →  Dashboard
 ```
 
-O crawler acessa páginas públicas do Metacritic e coleta informações estruturadas sobre os jogos.
+## 👥 Integrantes
 
-Os dados coletados são utilizados exclusivamente para fins educacionais.
-
----
-
-# 🚀 Tecnologias utilizadas
-
-## Back-end
-
-- 🐍 Python
-- ⚡ FastAPI
-- 🍃 MongoDB
-- 🔗 PyMongo
-- 🌐 Requests
-- 🍲 BeautifulSoup
-- 🚀 Uvicorn
-
-## Front-end
-
-- HTML5
-- CSS3
-- JavaScript
-- Fetch API
-
-O projeto não utiliza frameworks de front-end, mantendo a interface simples e facilitando o entendimento da integração entre o JavaScript e a API.
+Pedro Antônio Borges - RM: 572549
+Enrico Bertolacini - RM: 570999
+Julia Lima da Silva - RM: 569203
+Guilherme Alvejan - RM: 570835
+Matheus Sá Teles - RM: 570835
 
 ---
 
-# 🗂️ Estrutura do projeto
+## O que o projeto faz
 
-```text
-Check-Point-5---Python/
-│
-├── api/
-│   └── main.py
-│
-├── crawler/
-│   └── crawler.py
-│
-├── database/
-│   └── mongo.py
-│
-├── dashboard/
-│   ├── index.html
-│   ├── style.css
-│   └── script.js
-│
-├── config.py
-├── requirements.txt
-├── README.md
-└── .gitignore
+- **Crawler:** acessa a listagem pública de jogos do Metacritic e coleta título, Metascore, veredito e link. Evita duplicados e registra a data e hora de cada coleta.
+- **Banco:** guarda os jogos no MongoDB. Novas coletas atualizam os dados sem apagar nada.
+- **API:** entrega os dados com FastAPI, com listagem, busca, filtros e estatísticas.
+- **Dashboard:** mostra o total de jogos, nota média, maior e menor nota, dois gráficos, o Top 10 e uma tabela com busca e filtros.
+
+Só são coletados dados públicos de jogos, sem nenhum dado pessoal. Uso educacional, com pausa entre as requisições.
+
+## Tecnologias
+
+Python · FastAPI · MongoDB · Requests e BeautifulSoup · HTML, CSS e JavaScript · Chart.js
+
+## Estrutura de pastas
+
+```
+├── config.py            # configurações (Mongo, URL, nº de páginas)
+├── requirements.txt     # dependências
+├── crawler/crawler.py   # coleta dos dados
+├── database/mongo.py    # conexão e gravação no MongoDB
+├── api/main.py          # API FastAPI
+└── dashboard/           # index.html, style.css e script.js
 ```
 
-### 📁 `crawler/`
-
-Responsável pela coleta dos dados do Metacritic.
-
-O crawler acessa as páginas de listagem de jogos, identifica as informações necessárias e envia os dados para o MongoDB.
-
-### 📁 `database/`
-
-Contém a configuração de conexão com o MongoDB e disponibiliza a coleção utilizada pelo restante da aplicação.
-
-### 📁 `api/`
-
-Contém a API criada com FastAPI.
-
-A API consulta os dados armazenados no MongoDB e disponibiliza os resultados através de endpoints HTTP.
-
-### 📁 `dashboard/`
-
-Contém o front-end da aplicação.
-
-O JavaScript utiliza `fetch()` para consumir a API FastAPI e apresentar as informações coletadas de forma visual.
-
 ---
 
-# 🎮 Dados coletados
+## Como usar
 
-Para cada jogo, o crawler pode armazenar informações como:
+### Pré-requisitos
+- Python 3.10 ou superior
+- MongoDB Community (com o serviço ligado) e, de preferência, o MongoDB Compass
+- Navegador e conexão com a internet (os gráficos usam o Chart.js via CDN)
 
-| Campo | Descrição |
+### 1. Baixe o projeto
+```bash
+git clone https://github.com/EnricoBertolacini/Check-Point-5---Python.git
+cd Check-Point-5---Python
+```
+
+### 2. Crie o ambiente virtual e instale as dependências
+```bash
+python -m venv venv
+```
+Ative o ambiente de acordo com o seu terminal:
+
+| Terminal | Comando |
 |---|---|
-| `slug` | Identificador único do jogo |
-| `titulo` | Nome do jogo |
-| `metascore` | Nota do jogo de 0 a 100 |
-| `veredito` | Classificação relacionada à nota |
-| `url` | Página do jogo |
-| `fonte` | Página utilizada para realizar a coleta |
-| `primeira_coleta_em` | Data da primeira coleta |
-| `ultima_coleta_em` | Data da coleta mais recente |
+| PowerShell | `venv\Scripts\activate` |
+| Git Bash | `source venv/Scripts/activate` |
+| Linux / Mac | `source venv/bin/activate` |
 
-Exemplo de documento armazenado:
+```bash
+pip install -r requirements.txt
+```
+
+> Erro de "execução de scripts desabilitada" no PowerShell? Rode uma vez:
+> `Set-ExecutionPolicy -Scope CurrentUser RemoteSigned`
+
+### 3. Confirme que o MongoDB está rodando
+Abra o Compass e conecte em `mongodb://localhost:27017`. Se usar outro endereço, defina a variável de ambiente `MONGO_URI`.
+
+### 4. Colete os dados
+```bash
+python -m crawler.crawler 5
+```
+O número é a quantidade de páginas. Quanto mais páginas, mais jogos e mais variedade de notas nos gráficos. Pode rodar quantas vezes quiser: os jogos existentes são atualizados e os novos são adicionados.
+
+### 5. Suba a API
+```bash
+uvicorn api.main:app --reload
+```
+Deixe esse terminal aberto. A documentação interativa fica em **http://127.0.0.1:8000/docs**.
+
+### 6. Abra o dashboard
+Abra `dashboard/index.html` pelo navegador (no VS Code, use a extensão **Live Server** > *Open with Live Server*). Com a API rodando, os dados aparecem sozinhos.
+
+> Rode sempre os comandos a partir da **raiz do projeto**, a pasta onde está o `config.py`.
+
+---
+
+## Endpoints da API
+
+Base: `http://127.0.0.1:8000`
+
+| Método | Rota | Descrição |
+|---|---|---|
+| GET | `/jogos` | Lista paginada. Filtros: `busca`, `veredito`, `nota_min`, `nota_max`, `pagina`, `limite` |
+| GET | `/jogos/{slug}` | Um jogo específico (404 se não existir) |
+| GET | `/estatisticas` | Total, nota média, máxima, mínima e última coleta |
+| GET | `/dashboard` | Dados prontos para o dashboard: resumo, jogos por veredito, por faixa de nota e Top 10 |
+
+Exemplos: `/jogos?busca=zelda&nota_min=85` · `/jogos/elden-ring`
+
+## Banco de dados
+
+Banco `metacritic`, coleção `jogos`, com índice único em `slug` (evita duplicados).
 
 ```json
 {
@@ -127,565 +119,36 @@ Exemplo de documento armazenado:
   "titulo": "Elden Ring",
   "metascore": 96,
   "veredito": "Universal Acclaim",
-  "url": "pagina-do-jogo",
-  "fonte": "pagina-da-coleta",
+  "url": "https://www.metacritic.com/game/elden-ring/",
+  "fonte": "https://www.metacritic.com/browse/game/?page=1",
   "primeira_coleta_em": "2026-10-05T18:00:00Z",
   "ultima_coleta_em": "2026-10-05T18:00:00Z"
 }
 ```
 
----
-
-# 🖥️ Dashboard
-
-O projeto conta com um dashboard próprio desenvolvido em **HTML, CSS e JavaScript**.
-
-A interface foi criada para tornar os dados retornados pela API mais fáceis de visualizar e analisar.
-
-## Funcionalidades do dashboard
-
-### 📊 Indicadores gerais
-
-O dashboard apresenta cards com:
-
-- Total de jogos coletados
-- Nota média
-- Maior nota encontrada
-- Menor nota encontrada
-- Data da última coleta
-
-### 🏆 Top 10 jogos
-
-Exibe os dez jogos com maiores notas presentes no banco de dados.
-
-Os três primeiros colocados recebem destaque visual no ranking.
-
-### 🔎 Pesquisa de jogos
-
-É possível pesquisar jogos pelo nome.
-
-Exemplo:
-
-```text
-Elden Ring
-```
-
-### 🎯 Filtro por nota
-
-Também é possível filtrar jogos de acordo com a nota mínima.
-
-Exemplos:
-
-```text
-90+
-80+
-70+
-50+
-```
-
-### 🏷️ Filtro por veredito
-
-Os jogos também podem ser filtrados pela classificação recebida no Metacritic.
-
-### 📊 Distribuição das notas
-
-O dashboard apresenta uma visualização da quantidade de jogos em diferentes faixas:
-
-```text
-90 - 100
-80 - 89
-70 - 79
-50 - 69
-0 - 49
-```
-
-### 📋 Distribuição por veredito
-
-Também é apresentada a quantidade de jogos pertencentes a cada classificação encontrada nos dados.
-
-### 🟢 Status da API
-
-O dashboard verifica se consegue se comunicar com o FastAPI.
-
-Quando a conexão está funcionando:
-
-```text
-● API Online
-```
-
-Caso a API não esteja disponível:
-
-```text
-● API Offline
-```
-
-### 📱 Layout responsivo
-
-A interface se adapta a diferentes tamanhos de tela, permitindo visualizar o dashboard também em dispositivos menores.
-
----
-
-# ⚙️ Instalação
-
-## 1. Clonar o repositório
-
-```bash
-git clone REPOSITORIO_DO_PROJETO
-```
-
-Entre na pasta:
-
-```bash
-cd Check-Point-5---Python
-```
-
----
-
-# 🐍 2. Criar ambiente virtual
-
-No Windows:
-
-```powershell
-python -m venv venv
-```
-
-Ative:
-
-```powershell
-.\venv\Scripts\Activate.ps1
-```
-
-Em Linux ou macOS:
-
-```bash
-python3 -m venv venv
-source venv/bin/activate
-```
-
-O uso de ambiente virtual é recomendado para manter as dependências do projeto separadas das outras instalações do Python.
-
----
-
-# 📦 3. Instalar as dependências
-
-Com o ambiente virtual ativado:
-
-```powershell
-python -m pip install -r requirements.txt
-```
-
-As principais dependências utilizadas são:
-
-```text
-fastapi
-uvicorn
-pymongo
-requests
-beautifulsoup4
-```
-
----
-
-# 🍃 4. Configurar o MongoDB
-
-O projeto utiliza um MongoDB local por padrão.
-
-A conexão esperada é:
-
-```text
-localhost:27017
-```
-
-No Windows, é possível verificar se o serviço está funcionando com:
-
-```powershell
-Get-Service MongoDB
-```
-
-O status esperado é:
-
-```text
-Running
-```
-
-Caso esteja parado, execute o PowerShell como administrador e utilize:
-
-```powershell
-Start-Service MongoDB
-```
-
-O banco utilizado pelo projeto é:
-
-```text
-metacritic
-```
-
-E a coleção:
-
-```text
-jogos
-```
-
-O projeto utiliza um índice único baseado no `slug` para evitar jogos duplicados.
-
----
-
-# 🕷️ 5. Executar o Web Crawler
-
-Sempre execute os comandos a partir da pasta principal do projeto.
-
-Para coletar uma página:
-
-```powershell
-python -m crawler.crawler 1
-```
-
-Para coletar três páginas:
-
-```powershell
-python -m crawler.crawler 3
-```
-
-O número informado representa a quantidade de páginas que o crawler deverá processar.
-
-Durante a execução ocorre o seguinte fluxo:
-
-```text
-Metacritic
-     ↓
-Crawler
-     ↓
-Tratamento dos dados
-     ↓
-MongoDB
-```
-
-Jogos que já existem no banco podem ser atualizados, enquanto novos jogos são adicionados.
-
----
-
-# ⚡ 6. Iniciar a API
-
-Execute:
-
-```powershell
-python -m uvicorn api.main:app --reload
-```
-
-Se tudo estiver funcionando corretamente, será exibida uma mensagem semelhante a:
-
-```text
-Uvicorn running on http://127.0.0.1:8000
-```
-
-Mantenha esse terminal aberto enquanto estiver utilizando o dashboard.
-
----
-
-# 📚 Documentação da API
-
-O FastAPI gera automaticamente uma interface para testar os endpoints.
-
-Com o servidor em execução, acesse no navegador:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Por essa página é possível testar as requisições da API diretamente pelo navegador.
-
----
-
-# 🔌 Endpoints
-
-## Listar jogos
-
-```http
-GET /jogos
-```
-
-Lista os jogos armazenados no banco.
-
-Aceita os seguintes parâmetros:
-
-| Parâmetro | Função |
+| Campo | Descrição |
 |---|---|
-| `busca` | Pesquisa pelo nome |
-| `veredito` | Filtra pela classificação |
-| `nota_min` | Define nota mínima |
-| `nota_max` | Define nota máxima |
-| `pagina` | Página da consulta |
-| `limite` | Quantidade de resultados |
-
-Exemplo:
-
-```text
-/jogos?busca=zelda&nota_min=85
-```
+| `slug` | identificador do jogo no site (único) |
+| `titulo` | nome do jogo |
+| `metascore` | nota de 0 a 100 (`null` quando o site mostra "tbd") |
+| `veredito` | classificação da crítica, definida pela nota (90+ Universal Acclaim, 75+ Generally Favorable, 50+ Mixed or Average, 20+ Generally Unfavorable, abaixo disso Overwhelming Dislike) |
+| `url` | página do jogo no Metacritic |
+| `fonte` | página da listagem de onde o dado foi coletado |
+| `primeira_coleta_em` / `ultima_coleta_em` | data e hora (UTC) da coleta |
 
 ---
 
-## Buscar jogo pelo slug
+## Problemas comuns
 
-```http
-GET /jogos/{slug}
-```
-
-Exemplo:
-
-```text
-/jogos/elden-ring
-```
-
----
-
-## Estatísticas
-
-```http
-GET /estatisticas
-```
-
-Retorna informações gerais, como:
-
-```text
-Total de jogos
-Jogos com nota
-Nota média
-Maior nota
-Menor nota
-Última coleta
-```
+| Erro | Solução |
+|---|---|
+| `ServerSelectionTimeoutError` | MongoDB desligado. Abra o `services.msc` e inicie o serviço **MongoDB** |
+| `No module named 'config'` | Rode de dentro da pasta do `config.py` e use `python -m crawler.crawler` |
+| `pip` ou `uvicorn` não reconhecido | O ambiente virtual não está ativado (passo 2) |
+| Dashboard mostra "API Offline" | A API não está rodando (passo 5) |
+| Gráficos ou tabelas vazios | O crawler ainda não foi executado (passo 4) |
+| Erro `403` no crawler | O site bloqueou a requisição. Espere um pouco e tente com menos páginas |
 
 ---
 
-## Dados do dashboard
-
-```http
-GET /dashboard
-```
-
-Esse endpoint reúne em apenas uma requisição as principais informações necessárias pelo front-end.
-
-Retorna:
-
-```text
-Resumo geral
-Distribuição por veredito
-Distribuição por faixa de nota
-Top 10 jogos
-```
-
----
-
-# 🌐 7. Executar o Front-end
-
-Depois de iniciar o MongoDB e o FastAPI, abra:
-
-```text
-dashboard/index.html
-```
-
-No VS Code, é recomendado utilizar a extensão **Live Server**.
-
-Clique com o botão direito no arquivo:
-
-```text
-index.html
-```
-
-e selecione:
-
-```text
-Open with Live Server
-```
-
-O navegador deverá abrir o dashboard automaticamente.
-
-Normalmente o endereço será semelhante a:
-
-```text
-http://127.0.0.1:5500/dashboard/index.html
-```
-
-O JavaScript do dashboard se comunica com a API executada em:
-
-```text
-http://127.0.0.1:8000
-```
-
----
-
-# 🔄 Fluxo completo para executar o projeto
-
-Depois que tudo estiver instalado, normalmente basta seguir esta ordem:
-
-## Terminal 1 — verificar MongoDB
-
-```powershell
-Get-Service MongoDB
-```
-
-## Terminal 2 — coletar dados
-
-```powershell
-py -m crawler.crawler 3
-```
-
-## Terminal 3 — iniciar FastAPI
-
-```powershell
-py -m uvicorn api.main:app --reload
-```
-
-## Navegador
-
-Abra o dashboard utilizando o Live Server.
-
-O fluxo completo será:
-
-```text
-               METACRITIC
-                    │
-                    ▼
-              WEB CRAWLER
-                  Python
-                    │
-                    ▼
-                MongoDB
-                    │
-                    ▼
-                FastAPI
-                    │
-             ┌──────┴──────┐
-             ▼             ▼
-         /jogos        /dashboard
-             │             │
-             └──────┬──────┘
-                    ▼
-               JavaScript
-                  Fetch
-                    │
-                    ▼
-          HTML + CSS Dashboard
-                    │
-                    ▼
-                 USUÁRIO
-```
-
----
-
-# 🧪 Testando o projeto
-
-Para verificar se cada etapa está funcionando:
-
-### MongoDB
-
-```powershell
-Get-Service MongoDB
-```
-
-Deve aparecer como `Running`.
-
-### API
-
-Abra:
-
-```text
-http://127.0.0.1:8000/docs
-```
-
-Se a documentação aparecer, o FastAPI está funcionando.
-
-### Dashboard
-
-Abra o `index.html` pelo Live Server.
-
-Se aparecer:
-
-```text
-● API Online
-```
-
-significa que o front-end conseguiu se comunicar com o back-end.
-
----
-
-# ❗ Problemas comuns
-
-## `uvicorn` não é reconhecido
-
-Utilize:
-
-```powershell
-py -m uvicorn api.main:app --reload
-```
-
----
-
-## `ModuleNotFoundError`
-
-Instale todas as dependências:
-
-```powershell
-py -m pip install -r requirements.txt
-```
-
----
-
-## Erro `localhost:27017`
-
-Esse erro normalmente significa que o MongoDB não está em execução.
-
-Verifique:
-
-```powershell
-Get-Service MongoDB
-```
-
----
-
-## Dashboard aparece, mas não mostra dados
-
-Verifique se:
-
-1. O MongoDB está ativo.
-2. O crawler já foi executado.
-3. Existem jogos armazenados no banco.
-4. O FastAPI está rodando.
-5. O dashboard mostra `API Online`.
-
----
-
-# 🎓 Finalidade acadêmica
-
-Este projeto foi desenvolvido para fins educacionais, demonstrando conceitos de:
-
-- Web Crawling
-- Web Scraping
-- Python
-- Manipulação de dados
-- Banco de dados NoSQL
-- MongoDB
-- Desenvolvimento de APIs
-- FastAPI
-- Integração entre front-end e back-end
-- Requisições HTTP
-- JavaScript assíncrono
-- Desenvolvimento de dashboards
-- Git e GitHub
-
----
-
-# 👥 Integrantes
-
-Adicione aqui os nomes dos integrantes do grupo:
-
-```text
-Pedro Antônio Borges: RM 572549
-Enrico Bertolacini - rm570999
-Julia Lima da Silva - RM: 569203
-Guilherme Alvejan - RM: 570835
-Matheus Sá Teles - RM: 570835
-```
-
----
+Projeto acadêmico · FIAP
