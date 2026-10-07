@@ -1,9 +1,4 @@
-"""Web Crawler do Metacritic (jogos). Roda independente da API.
 
-Uso:
-    python -m crawler.crawler   # coleta PAGINAS páginas (config.py)
-    python -m crawler.crawler 5 # coleta 5 páginas
-"""
 import re
 import sys
 import time
@@ -22,6 +17,21 @@ VEREDITOS = {
     "Generally Unfavorable",
     "Overwhelming Dislike",
 }
+
+
+def veredito_pela_nota(nota):
+    """Faixas oficiais do Metacritic para jogos."""
+    if nota is None:
+        return None
+    if nota >= 90:
+        return "Universal Acclaim"
+    if nota >= 75:
+        return "Generally Favorable"
+    if nota >= 50:
+        return "Mixed or Average"
+    if nota >= 20:
+        return "Generally Unfavorable"
+    return "Overwhelming Dislike"
 
 
 def baixar_pagina(pagina: int) -> str:
@@ -57,12 +67,15 @@ def extrair_jogos(html: str, fonte: str) -> list[dict]:
             elif texto in VEREDITOS:
                 veredito = texto
 
-        # se o mesmo jogo aparecer 2x, prefere a versão que tem nota
+        
+        veredito = veredito or veredito_pela_nota(metascore)
+
+       
         if slug not in jogos or jogos[slug]["metascore"] is None:
             jogos[slug] = {
                 "slug": slug,
                 "titulo": titulo,
-                "metascore": metascore,   # None quando é "tbd"
+                "metascore": metascore,  
                 "veredito": veredito,
                 "url": f"{BASE_URL}/game/{slug}/",
                 "fonte": fonte,
